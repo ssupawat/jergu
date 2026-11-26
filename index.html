@@ -45,10 +45,11 @@ main{display:grid;gap:24px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);a
 .drop strong{display:block;color:var(--ink2);font-size:18px;font-weight:600;margin-bottom:4px}
 .stage.on .drop{border-color:var(--p600);background:var(--pbg)}
 .drop svg{width:40px;height:40px;color:var(--faint);margin-bottom:10px}
-.quote{font-family:Kanit,"Noto Sans Thai",sans-serif;font-weight:900;font-size:26px;line-height:1.3;margin:0 0 4px}
+.quote{font-family:Kanit,"Noto Sans Thai",sans-serif;font-weight:900;font-size:26px;line-height:1.3;margin:0 0 16px}
 .field+.field{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
 .h{display:block;font-weight:500;color:var(--ink2);margin:0 0 8px}
-.hint{color:var(--faint);font-size:13px;margin-top:8px;min-height:20px}
+.hint{color:var(--faint);font-size:13px;margin-top:8px}
+#msg:empty{display:none}
 .seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
 .seg button{flex:1;min-height:44px;border:0;border-left:1px solid var(--line2);background:var(--card);color:var(--ink2);font:inherit;font-weight:600;cursor:pointer}
 .seg button:first-child{border-left:0}
@@ -64,6 +65,7 @@ main{display:grid;gap:24px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);a
 input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 /* รายการรูป */
 .list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.list:empty{display:none}
 .list li{display:flex;align-items:center;gap:10px;padding:6px;border:1px solid var(--line);border-radius:10px}
 .list img{width:56px;height:56px;object-fit:cover;border-radius:6px;flex:none;background:var(--soft)}
 .list .grow{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
@@ -83,7 +85,6 @@ input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--p600);curso
 <body>
 <header>
   <h1>เจอกู</h1>
-  <p>ใส่รูป 1-3 รูป แล้วโหลดไปใช้ได้เลย</p>
 </header>
 
 <main>
@@ -92,7 +93,6 @@ input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--p600);curso
       <div>
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15v1.2c0 1.68 0 2.52-.33 3.16a3 3 0 0 1-1.31 1.31C18.72 21 17.88 21 16.2 21H7.8c-1.68 0-2.52 0-3.16-.33a3 3 0 0 1-1.31-1.31C3 18.72 3 17.88 3 16.2V15m14-7-5-5m0 0L7 8m5-5v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <strong>แตะเพื่อเลือกรูป</strong>
-        เลือกได้ 1-3 รูป หรือลากมาวาง / กด Ctrl+V
       </div>
     </div>
     <img id="out" alt="มีม เป็นไงล่ะไอสัส เจอกู" hidden>
@@ -101,7 +101,6 @@ input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--p600);curso
 
   <div class="card">
     <p class="quote">“เป็นไงล่ะไอสัส เจอกู”</p>
-    <div class="hint" style="margin-top:0">ใช้ตอนชนะหรือพลิกเกมได้ แล้วอยากโชว์เหนือ</div>
 
     <div class="field">
       <label class="btn sec" for="file" id="addBtn">
@@ -110,16 +109,13 @@ input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--p600);curso
       </label>
       <input type="file" id="file" accept="image/*" multiple>
       <ul class="list" id="list" aria-label="รูปที่ใส่"></ul>
-      <div class="hint" id="upHint">รูปอยู่ในเครื่องคุณ ไม่ถูกส่งไปไหน</div>
     </div>
 
     <div class="field">
-      <span class="h" id="styleLabel">แบบตัวหนังสือ</span>
-      <div class="seg" role="group" aria-labelledby="styleLabel">
+      <div class="seg" role="group" aria-label="แบบตัวหนังสือ">
         <button data-style="quote" aria-pressed="true">อ้างคำพูด</button>
         <button data-style="subtitle" aria-pressed="false">ซับหนัง</button>
       </div>
-      <div class="hint">เลือกให้อัตโนมัติ: รูปเดียวแนวนอนเป็นซับหนัง นอกนั้นเป็นอ้างคำพูด</div>
       <div class="sizehead"><label class="h" for="size">ขนาดตัวอักษร</label><output id="sizeOut" for="size">100%</output></div>
       <input type="range" id="size" min="60" max="140" step="10" value="100">
     </div>
