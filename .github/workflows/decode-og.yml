@@ -1,0 +1,24 @@
+# ทำงานครั้งเดียว: ถอด og.png.b64 เป็น og.png แล้วลบไฟล์ b64 กับ workflow นี้ทิ้ง
+name: decode-og
+on:
+  push:
+    paths: ["og.png.b64"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode og.png and clean up
+        run: |
+          if [ ! -f og.png.b64 ]; then echo "nothing to do"; exit 0; fi
+          base64 -d og.png.b64 > og.png
+          echo "bc364b78dc16151a325c82c6512317875e4570c6a63ff88adbc063ecc84324ad  og.png" | sha256sum -c -
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add og.png
+          git rm -q og.png.b64 .github/workflows/decode-og.yml
+          git commit -m "เพิ่ม og.png (รูปพรีวิวตอนแชร์ลิงก์)"
+          git push
