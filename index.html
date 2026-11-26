@@ -74,6 +74,10 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .ib:hover:not(:disabled){background:var(--soft)}
 .ib svg{width:18px;height:18px}
 #msg{text-align:center}
+.sizehead{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px}
+.sizehead .h{margin:0}
+#sizeOut{font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--p600);cursor:pointer}
 </style>
 </head>
 <body>
@@ -116,6 +120,8 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
         <button data-style="subtitle" aria-pressed="false">ซับหนัง</button>
       </div>
       <div class="hint">เลือกให้อัตโนมัติ: รูปเดียวแนวนอนเป็นซับหนัง นอกนั้นเป็นอ้างคำพูด</div>
+      <div class="sizehead"><label class="h" for="size">ขนาดตัวอักษร</label><output id="sizeOut" for="size">100%</output></div>
+      <input type="range" id="size" min="60" max="140" step="10" value="100">
     </div>
 
     <button class="btn pri" id="dl" disabled>
@@ -134,7 +140,7 @@ const cv = $("cv"), ctx = cv.getContext("2d"), out = $("out");
 const MAX = 3, GAP = 10, WIDTH = 1200;
 const QUOTE = "เป็นไงล่ะ\nไอสัส เจอกู";   // ตัดบรรทัดแบบต้นฉบับ (ถ้าพื้นที่กว้างพอจะรวมเป็นบรรทัดเดียว)
 const SUB = "เป็นไงล่ะไอ้สัส เจอกู";
-const state = { imgs: [], at: 0, style: "quote", styleTouched: false };   // at = รูปที่มีวลี
+const state = { imgs: [], at: 0, style: "quote", styleTouched: false, scale: 1 };   // at = รูปที่มีวลี
 const inArtifact = !!window.claude;
 let downloads = null;
 
@@ -164,16 +170,17 @@ function draw(rows, { box, font, maxSize, stroke, shadow = 0, lineH = 1.3 }) {
 function caption(x0, y0, W, H) {
   const pad = W * .05;
   if (state.style === "subtitle") {
-    draw([SUB], { box: [x0 + pad, y0 + H * .72, x0 + W - pad, y0 + H * .95], font: "500 {s}px Sarabun, 'Noto Sans Thai', sans-serif",
-      maxSize: Math.round(Math.min(W, H * 1.6) / 22), stroke: false, shadow: 8 });
+    draw([SUB], { box: [x0 + pad, y0 + H * .6, x0 + W - pad, y0 + H * .95], font: "500 {s}px Sarabun, 'Noto Sans Thai', sans-serif",
+      maxSize: Math.round(Math.min(W, H * 1.6) / 22 * state.scale), stroke: false, shadow: 8 });
     return;
   }
   // แผงกว้าง (แบบรูปต่อกัน) ใช้บรรทัดเดียวขนาดพอดี; แผงสี่เหลี่ยมใช้สองบรรทัดตัวใหญ่
   const font = "900 {s}px Kanit, 'Noto Sans Thai', sans-serif";
   const wide = W / H > 1.3;
   const rows = wide ? [`“${QUOTE.replace("\n", "")}”`] : [`“${QUOTE.split("\n")[0]}`, `${QUOTE.split("\n")[1]}”`];
-  draw(rows, { box: [x0 + pad, y0 + H * (wide ? .7 : .55), x0 + W - pad, y0 + H * .93], font,
-    maxSize: Math.round(wide ? W / 15 : W / 8.5), stroke: true });
+  // กล่องสูงพอให้ขยายได้ แต่ตัวหนังสือชิดล่างเสมอ; ใหญ่เกินกว้างรูปจะถูกย่อให้พอดีเอง
+  draw(rows, { box: [x0 + pad, y0 + H * (wide ? .45 : .4), x0 + W - pad, y0 + H * .93], font,
+    maxSize: Math.round((wide ? W / 15 : W / 8.5) * state.scale), stroke: true });
 }
 
 // ---------- รวมรูป ----------
@@ -253,6 +260,7 @@ function addFiles(files) {
 
 for (const b of document.querySelectorAll(".seg button"))
   b.onclick = () => { state.style = b.dataset.style; state.styleTouched = true; render(); };
+$("size").oninput = e => { state.scale = e.target.value / 100; $("sizeOut").textContent = `${e.target.value}%`; render(); };
 $("file").onchange = e => { addFiles(e.target.files); e.target.value = ""; };
 $("drop").onclick = () => $("file").click();
 $("drop").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
